@@ -1,23 +1,3 @@
-color getColor(Side side) {
-  switch(side) {
-  case U:
-    return #FFFFFF;
-  case D:
-    return #FFFF00;
-  case F:
-    return #00FF00;
-  case B:
-    return #0000FF;
-  case L:
-    return #FFA500;
-  case R:
-    return #FF0000;
-  default:
-    return 0;
-  }
-}
-
-
 class Cube {
 
   private int length;
@@ -30,20 +10,24 @@ class Cube {
 
   public Cube(int length) {
     this.length = length;
-
     this.init();
   }
 
-
   public void init() {
+    int index = 0;
     for (int i=0; i<3; i++) {
       for (int j=0; j<3; j++) {
         for (int k=0; k<3; k++) {
+          index++;
           float offset = (3 * length) / 2 - length / 2;
           float x = length * i - offset;
           float y = length * j - offset;
           float z = length * k - offset;
-          cubes[i][j][k] = new Cubie(x, y, z, length);
+          if ( cubes[i][j][k] == null) {
+            cubes[i][j][k] = new Cubie(x, y, z, length, index);
+          }else {
+            cubes[i][j][k].setPoint(new PVector(x,y,z));
+          }
         }
       }
     }
@@ -52,9 +36,6 @@ class Cube {
 
   public void rotateSide(Side side, boolean clockwise) {
     this.rotatingSide  = getCubes(side);
-    rotate(this.rotatingSide, side, clockwise);
-
-
     this.rotate = true;
     this.clockwise = clockwise;
     this.side = side;
@@ -89,12 +70,12 @@ class Cube {
     return c;
   }
 
-  private void rotate(Cubie c[][], Side side, boolean clockwise) {
+  private void rotate() {
     for (int i=0; i<3; i++) {
       for (int j=0; j<3; j++) {
-        int[] pos = calculatePosition(i, j, clockwise);
-        println("("+i + ", " + j+ ") => ("+pos[0]+", "+pos[1]+")" );
-        Cubie cubie = c[3 - j - 1][i];
+        int[] pos = calculatePosition(i, j, clockwise);     
+        Cubie cubie = rotatingSide[pos[0]][pos[1]];
+        cubie.rotate(side, clockwise);
         switch(side) {
         case U:
           cubes[i][0][j] = cubie;
@@ -117,35 +98,38 @@ class Cube {
         }
       }
     }
+    this.init();
   }
 
   private int[] calculatePosition(int i, int j, boolean clockwise) {
-    return !clockwise ? new int[]{3 - j - 1, i} : new int[]{j, 3 - i - 1};
+    return clockwise ? new int[]{3 - j - 1, i} : new int[]{j, 3 - i - 1};
   }
+
 
   public void show() {
     if ( rotate ) {
-      angle++;
+      angle+=5;
       if ( angle % 90 ==  0) {
         rotate = false;
         angle = 0;
+        rotate();
       }
-      for (int i=0; i<3; i++) {
-        for (int j=0; j<3; j++) {
+      for (int i=0; i<cubes.length; i++) {
+        for (int j=0; j<cubes[i].length; j++) {
           Cubie c = rotatingSide[i][j];
-          float rotate = clockwise ? 1 : -1;
+          float rotate = clockwise ? angle : -angle;
           switch(side) {
           case U:
           case D:
-            c.yRotate += rotate;
+            c.yRotate = rotate;
             break;
           case F:
           case B:
-            c.zRotate += rotate;
+            c.zRotate = rotate;
             break;
           case L:
           case R:
-            c.xRotate += rotate;
+            c.xRotate = rotate;
             break;
           }
         }
