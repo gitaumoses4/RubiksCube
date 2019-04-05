@@ -125,6 +125,9 @@ class Cubie { //<>//
       z = a;
       break;
     }
+      pushMatrix();
+      //text(index+"", 0, 0, 0);
+      popMatrix();
 
     for (int i=0; i<4; i++) {
       vertex(x[i], y[i], z[i]);

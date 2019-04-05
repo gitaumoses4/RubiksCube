@@ -7,6 +7,10 @@ class Cube {
   private boolean clockwise = false;
   private Side side;
   private boolean rotate = false;
+  private int threshold = 30;
+  private int shuffle = 0;
+  private int rotateSpeed = 5;
+  private int shuffleSpeed = 15;
 
   public Cube(int length) {
     this.length = length;
@@ -25,12 +29,27 @@ class Cube {
           float z = length * k - offset;
           if ( cubes[i][j][k] == null) {
             cubes[i][j][k] = new Cubie(x, y, z, length, index);
-          }else {
-            cubes[i][j][k].setPoint(new PVector(x,y,z));
+          } else {
+            cubes[i][j][k].setPoint(new PVector(x, y, z));
           }
         }
       }
     }
+  }
+
+  public void shuffle() {
+    this.shuffle = threshold;
+    this.rotateSide(randomSide(), ((int)random(100)) % 2 == 0);
+  }
+
+  public void shuffle(int threshold) {
+    this.threshold = threshold;
+    this.shuffle();
+  }
+
+  public Side randomSide() {
+    Side[] sides = Side.values();
+    return sides[(int)random(sides.length - 1)];
   }
 
 
@@ -73,7 +92,7 @@ class Cube {
   private void rotate() {
     for (int i=0; i<3; i++) {
       for (int j=0; j<3; j++) {
-        int[] pos = calculatePosition(i, j, clockwise);     
+        int[] pos = calculatePosition(i, j, side == Side.U || side == Side.D ? clockwise : !clockwise);     
         Cubie cubie = rotatingSide[pos[0]][pos[1]];
         cubie.rotate(side, clockwise);
         switch(side) {
@@ -108,7 +127,7 @@ class Cube {
 
   public void show() {
     if ( rotate ) {
-      angle+=5;
+      angle += (shuffle > 0 ? shuffleSpeed : rotateSpeed);
       if ( angle % 90 ==  0) {
         rotate = false;
         angle = 0;
@@ -135,6 +154,12 @@ class Cube {
         }
       }
       angle = angle % 360;
+      if (angle % 90 == 0) {
+        if ( shuffle > 0) {
+          this.rotateSide(randomSide(), ((int)random(100)) % 2 == 0);
+          shuffle--;
+        }
+      }
     }
     for (int i=0; i<3; i++) {
       for (int j=0; j<3; j++) {

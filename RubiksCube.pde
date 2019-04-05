@@ -2,10 +2,12 @@ import peasy.*;
 
 PeasyCam cam;
 
+
 int length = 50;
 Cube cube = new Cube(length);
 
 HashMap<Character, Side> keyMap = new HashMap();
+
 
 void setup() {
   size(1200, 800, P3D);
@@ -32,8 +34,15 @@ void keyPressed() {
   if ( side != null) {
     cube.rotateSide(side, clockwise);
   }
-  if( keyCode == BACKSPACE){
+  if ( key == '-') {
     cube = new Cube(length);
     cube.show();
   }
+  if ( key == '$' ) {
+    shuffle();
+  }
+}
+
+void shuffle() {
+  cube.shuffle();
 }
