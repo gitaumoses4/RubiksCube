@@ -1,5 +1,6 @@
 # 3D Rubiks Cube implementation with Processing (Java)
 
+![Screenshot](https://github.com/gitaumoses4/RubiksCube/blob/master/screenshot.png?raw=true)
 
 # Usage
 You can use the following commands to rotate the Cube
